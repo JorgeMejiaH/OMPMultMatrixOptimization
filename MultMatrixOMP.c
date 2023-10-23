@@ -8,7 +8,7 @@
 
 
 void MultMatrix(int **matrixA, int **matrixB, int **resultado, int length) {
-    #pragma omp parallel for num_threads(num_threads)
+    #pragma omp parallel for
     for (int i = 0; i < length; i++) {
         for (int j = 0; j < length; j++) {
             resultado[i][j] = 0;
@@ -42,11 +42,10 @@ int main(int argc, char *argv[]) {
     double elapsed_time;
 
     int length = atoi(argv[1]);
-    int num_threads = atoi(argv[2]);
     int max_number = 100;
     int verbose = 0;
 
-    if (argc > 3 && strcmp(argv[3], "-v") == 0) {
+    if (argc > 2 && strcmp(argv[2], "-v") == 0) {
         verbose = 1;
     }
 
@@ -65,7 +64,11 @@ int main(int argc, char *argv[]) {
     FillMatrix(matrixA, length, max_number);
     FillMatrix(matrixB, length, max_number);
 
-    omp_set_num_threads(num_threads);
+    // Initialize OMP_NUM_THREADS from the environment
+    int OMP_NUM_THREADS = omp_get_max_threads();
+
+    // Set the number of threads based on the environment variable
+    omp_set_num_threads(OMP_NUM_THREADS);
 
     MultMatrix(matrixA, matrixB, result, length);
     
